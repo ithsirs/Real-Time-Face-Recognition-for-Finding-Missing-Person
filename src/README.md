@@ -24,32 +24,9 @@ This project implements an **end-to-end real-time face detection, tracking, and 
 
 ---
 
-## 2. Project Directory Structure
 
-```
-project_root/
-│
-├── src/
-│   ├── detection/
-│   │   ├── face2.py
-│   │   └── test1_dt.py
-│   ├── tracking/
-│   │   └── deep_sort.py
-│   └── recognition/
-│       ├── face_recog_core.py
-│       ├── precompute_embeddings.py
-│       └── search_query.py
-│
-├── embeddings/               # Generated face embeddings
-├── models/                   # Model files (optional)
-├── runs/                     # Logs
-├── .save/                    # Saved face crops from live video
-└── yolov8n-face.pt           # YOLOv8 face detection model
-```
 
----
-
-## 3. Environment Setup (Step-by-Step)
+## 2. Environment Setup (Step-by-Step)
 
 ### Step 1: Create Virtual Environment
 
@@ -83,9 +60,9 @@ yolov8n-face.pt
 
 ---
 
-## 4. Running the System
+## 3. Running the System
 
-### 4.1 Real-Time Face Detection + Tracking (Webcam)
+### 3.1 Real-Time Face Detection + Tracking (Webcam)
 
 This runs YOLOv8 face detection + DeepSORT tracking and saves face crops.
 
@@ -105,9 +82,9 @@ Press **`q`** to exit.
 
 ---
 
-## 5. Face Recognition Pipeline
+## 4. Face Recognition Pipeline
 
-### 5.1 Prepare Face Dataset
+### 4.1 Prepare Face Dataset
 
 Using the real-time detected faces saved in .save/ as a dataset.
 
@@ -120,7 +97,7 @@ Using the real-time detected faces saved in .save/ as a dataset.
 
 ---
 
-### 5.2 Precompute Face Embeddings
+### 4.2 Precompute Face Embeddings
 
 ```bash
 python -m src.recognition.precompute_embeddings --dataset_dir .save --precompute  --device cuda
@@ -133,7 +110,7 @@ python -m src.recognition.precompute_embeddings --dataset_dir .save --precompute
 
 ---
 
-### 5.3 Search / Identify a Face
+### 4.3 Search / Identify a Face
 
 ```bash
 python -m src.recognition.search_query --dataset_dir .save  --query sample3.jpg --topk 3  --show_image
@@ -146,7 +123,7 @@ python -m src.recognition.search_query --dataset_dir .save  --query sample3.jpg 
 
 ---
 
-## 6. End-to-End Logical Flow
+## 5. End-to-End Logical Flow
 
 ```
 Webcam Frame
@@ -164,7 +141,7 @@ Cosine Similarity Matching
 
 ---
 
-## 7. Configuration Tips
+## 6. Configuration Tips
 
 * **Detection confidence**: `conf_thresh` in `face2.py`
 * **Tracking stability**: `max_age`, `n_init` in `deep_sort.py`
@@ -173,9 +150,9 @@ Cosine Similarity Matching
 
 ---
 
-## 8.
 
-## 9. Intended Use Cases
+
+## 7. Intended Use Cases
 
 * Missing person identification
 * Surveillance analytics
@@ -185,4 +162,4 @@ Cosine Similarity Matching
 ---
 
 **Author:** Srishti Majumdar
-**Domain:** Computer Vision · AI · Face Recognition
+**Domain:** Computer Vision · Face Recognition
