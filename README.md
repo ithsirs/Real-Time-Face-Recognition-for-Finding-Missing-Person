@@ -1,207 +1,65 @@
-# Face Detection, Tracking & Recognition System
+# Real-Time-Face-Recognition-for-Finding-Missing-Person
 
-This project implements an **end-to-end real-time face detection, tracking, and recognition pipeline** using YOLOv8-Face, DeepSORT, and FaceNet (InceptionResnetV1).
+Set-up guidance for finding missing person in real time using face recognition. This version adds periodic database updates, per-frame batching, temporary crop/embedding storage, alerting, and optional crowd-density monitoring.
 
----
+## Overview
+- Detects faces with YOLOv8-Face
+- Processes every 10th frame for efficiency
+- Crops faces and saves to `temp_crops/`
+- Computes Facenet embeddings and saves to `temp_embeddings/`
+- Matches against a periodically refreshed reference index built from images fetched from MongoDB
+- Logs matches and triggers alerts via an Alert Manager
+- Optionally monitors crowd density and triggers alerts
 
-## 1. System Overview
+## Requirements
+- Python 3.9+
+- A webcam, video file, or RTSP stream
+- YOLOv8-Face weights file `yolov8n-face.pt` in the project root (or update the detector to point to your file)
+- Dependencies from `requirements.txt`
+- Optional: PyTorch with CUDA for GPU acceleration
 
-### Core Capabilities
+## Setup
+1. Create and activate a virtual environment
+   - Windows (PowerShell):
+     ```
+     python -m venv venv
+     .\venv\Scripts\Activate.ps1
+     ```
+2. Install dependencies
+   ```
+   pip install -r requirements.txt
+   ```
+3. Install the correct PyTorch build (optional, recommended for GPU)
+   - Follow https://pytorch.org/get-started/locally/ for CUDA-enabled builds
+4. Place YOLOv8-Face weights
+   - Put `yolov8n-face.pt` in the project root (expected by `src/detection/face2.py`)
+5. Configure alerts (optional but recommended)
+   - `pipeline_advanced.py` initializes `AlertManager` with a MongoDB URI; update it in code or via your preferred configuration mechanism
 
-* Real-time face detection with landmarks
-* Persistent face ID tracking across frames
-* Face crop extraction from live video
-* Face embedding generation (512-D)
-* Offline embedding database creation
-* Face similarity search using cosine similarity
+## How to Run
+- Webcam (index 0)
+  ```
+  python pipeline_advanced.py --source 0 --conf 0.5 --threshold 0.5 --db-interval 60
+  ```
+- RTSP stream
+  ```
+  python pipeline_advanced.py --source rtsp://user:pass@host:554/stream --conf 0.5 --threshold 0.5 --db-interval 60
+  ```
+- Video file
+  ```
+  python pipeline_advanced.py --source d:\videos\input.mp4 --conf 0.5 --threshold 0.5 --db-interval 60
+  ```
 
-### Technology Stack
+Flags:
+- `--source` webcam index (`0`), a file path, or RTSP URL
+- `--conf` face detection confidence threshold
+- `--threshold` recognition similarity threshold (score01 in [0..1])
+- `--db-interval` seconds between reference DB refreshes
 
-* **Detection**: YOLOv8-Face (Ultralytics)
-* **Tracking**: DeepSORT (deep-sort-realtime)
-* **Recognition**: FaceNet (InceptionResnetV1 – facenet-pytorch)
-* **Backend**: Python, OpenCV, PyTorch
 
----
 
-## 2. Project Directory Structure
-
-```
-project_root/
-│
-├── src/
-│   ├── detection/
-│   │   ├── face2.py
-│   │   └── test1_dt.py
-│   ├── tracking/
-│   │   └── deep_sort.py
-│   └── recognition/
-│       ├── face_recog_core.py
-│       ├── precompute_embeddings.py
-│       └── search_query.py
-│
-├── embeddings/               # Generated face embeddings
-├── models/                   # Model files (optional)
-├── runs/                     # Logs
-├── .save/                    # Saved face crops from live video
-└── yolov8n-face.pt           # YOLOv8 face detection model
-```
-
----
-
-## 3. Environment Setup (Step-by-Step)
-
-### Step 1: Create Virtual Environment
-
-```bash
-python -m venv venv
-source venv/bin/activate      # Linux / Mac
-venv\Scripts\activate         # Windows
-```
-
----
-
-### Step 2: Install Dependencies
-
-```bash
-pip install torch torchvision torchaudio
-pip install opencv-python ultralytics facenet-pytorch
-pip install deep-sort-realtime scikit-learn pillow numpy
-```
-
-> ⚠️ For CUDA support, ensure compatible PyTorch + NVIDIA drivers are installed.
-
----
-
-### Step 3: Download YOLOv8 Face Model
-
-Download **YOLOv8n-Face** and place it in the project root:
-
-```
-yolov8n-face.pt
-```
-
----
-
-## 4. Running the System
-
-### 4.1 Real-Time Face Detection + Tracking (Webcam)
-
-This runs YOLOv8 face detection + DeepSORT tracking and saves face crops.
-
-```bash
-python -m src.detection.test1_dt 
-```
-
-#### What Happens Internally
-
-1. Webcam frame captured
-2. Faces detected with landmarks
-3. DeepSORT assigns persistent IDs
-4. Bounding boxes + IDs rendered
-5. Face crops saved to `.save/`
-
-Press **`q`** to exit.
-
----
-
-## 5. Face Recognition Pipeline
-
-### 5.1 Prepare Face Dataset
-
-Using the real-time detected faces saved in .save/ as a dataset.
-
-```
-.save/
-├── 1_20251227_215952.jpg
-├── 1_20251227_215953.jpg
-├── 1_20251227_215954.jpg
-```
-
----
-
-### 5.2 Precompute Face Embeddings
-
-```bash
-python -m src.recognition.precompute_embeddings --dataset_dir .save --precompute  --device cuda
-```
-
-#### Output
-
-* `embeddings/*.npy`
-* `embeddings/embeddings_index.csv`
-
----
-
-### 5.3 Search / Identify a Face
-
-```bash
-python -m src.recognition.search_query --dataset_dir .save  --query sample3.jpg --topk 3  --show_image
-```
-
-#### Output
-
-* Console similarity scores
-* Saved result montage (`result_matches.jpg`)
-
----
-
-## 6. End-to-End Logical Flow
-
-```
-Webcam Frame
-   ↓
-YOLOv8 Face Detection
-   ↓
-DeepSORT Tracking (Face ID)
-   ↓
-Face Crop Extraction
-   ↓
-FaceNet Embedding (512-D)
-   ↓
-Cosine Similarity Matching
-```
-
----
-
-## 7. Configuration Tips
-
-* **Detection confidence**: `conf_thresh` in `face2.py`
-* **Tracking stability**: `max_age`, `n_init` in `deep_sort.py`
-* **Recognition threshold**: `--threshold` in `search_query.py`
-* **Embedding model**: `vggface2` or `casia-webface`
-
----
-
-## 8. Common Issues & Fixes
-
-| Issue              | Fix                        |
-| ------------------ | -------------------------- |
-| Webcam not opening | Check camera index (0/1)   |
-| Slow inference     | Use GPU, reduce resolution |
-| False matches      | Increase cosine threshold  |
-| ID switching       | Increase `n_init`          |
-
----
-
-## 9. Future Extensions
-
-* Live recognition with tracker IDs
-* Database-backed embedding storage (PostgreSQL + pgvector)
-* Multi-camera support
-* Face re-identification across sessions
-* REST / WebSocket API integration
-
----
-
-## 10. Intended Use Cases
-
-* Missing person identification
-* Surveillance analytics
-* Smart attendance systems
-* Research & academic projects
-
----
-
-**Author:** Srishti Majumdar
-**Domain:** Computer Vision · AI · Face Recognition
+## Tips
+- Increase `--conf` to make detection stricter; increase `--threshold` to reduce false positives
+- Ensure `yolov8n-face.pt` exists; detection will fail without it
+- If GPU is available, the pipeline uses CUDA automatically for embeddings and crowd monitor
+- Keep your MongoDB credentials secure; prefer environment-based configuration for production
