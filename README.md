@@ -1,5 +1,6 @@
 # Real-Time-Face-Recognition-for-Finding-Missing-Person
 
+![alt text](<Untitled diagram-2025-12-08-192545 (1)-1.png>)
 ## Project Overview
 
 This project presents a real-time, multi-stage surveillance system designed to identify missing persons from live video streams under real-world constraints. Rather than focusing solely on face recognition accuracy, the system emphasizes system-level design, performance analysis, and reliability, making it suitable for deployment-oriented research and experimentation.
