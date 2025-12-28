@@ -161,21 +161,7 @@ cython_debug/
 *.jpeg
 *.png
 
-# Exclude trained models / binary artifacts
-*.pt
-
 
 # Exclude CSV files
 *.csv
 
-# Exclude DeepFace cloned folder
-deepface/
-DeepFace/
-aligned_faces/
-
-# ====================================
-# Model weights
-*.pth
-*.pth.tar
-*.pt
-*.ckpt
