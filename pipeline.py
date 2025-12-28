@@ -206,6 +206,10 @@ class Config:
     embeddings_index_file: str = "embeddings/runtime_index.csv"  # Index file for runtime embeddings
     detector_model_path: str = "yolov8n-face.pt"
     detector_conf_thresh: float = 0.3
+    detector_imgsz: int = 384
+    detector_half: bool = True
+    video_width: Optional[int] = None
+    video_height: Optional[int] = None
     tracker_max_age: int = 100
     tracker_n_init: int = 3
     tracker_max_iou_distance: float = 0.7
@@ -500,7 +504,9 @@ class VideoReaderThread(threading.Thread):
         self.detector = FaceDetector(
             model_path=self.config.detector_model_path,
             conf_thresh=self.config.detector_conf_thresh,
-            device=device
+            device=device,
+            imgsz=getattr(self.config, "detector_imgsz", 384),
+            half=getattr(self.config, "detector_half", True)
         )
         self.logger.info(f"Detector initialized on {device}")
 
@@ -515,6 +521,15 @@ class VideoReaderThread(threading.Thread):
             raise RuntimeError(f"Could not open video source: {self.config.video_source}")
 
         self.logger.info(f"Video source opened: {self.config.video_source}")
+
+        if self.config.video_width is not None:
+            cap.set(cv2.CAP_PROP_FRAME_WIDTH, int(self.config.video_width))
+        if self.config.video_height is not None:
+            cap.set(cv2.CAP_PROP_FRAME_HEIGHT, int(self.config.video_height))
+        try:
+            cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        except Exception:
+            pass
 
         try:
             while not self.stop_event.is_set():
@@ -1175,7 +1190,9 @@ class BatchRecognitionThread(threading.Thread):
         self.detector = FaceDetector(
             model_path=self.config.detector_model_path,
             conf_thresh=self.config.detector_conf_thresh,
-            device=self.device
+            device=self.device,
+            imgsz=getattr(self.config, "detector_imgsz", 384),
+            half=getattr(self.config, "detector_half", True)
         )
         
         # Initialize embedding model
@@ -1730,4 +1747,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

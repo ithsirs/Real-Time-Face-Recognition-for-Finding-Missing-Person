@@ -49,7 +49,10 @@ Set-up guidance for finding missing person in real time using face recognition. 
   ```
   python pipeline_advanced.py --source d:\videos\input.mp4 --conf 0.5 --threshold 0.5 --db-interval 60
   ```
-
+- Final Metric Evaluation
+  ```
+   python pipeline.py --config configs/default.yaml  
+   ```
 Flags:
 - `--source` webcam index (`0`), a file path, or RTSP URL
 - `--conf` face detection confidence threshold

@@ -26,7 +26,7 @@ embeddings_index_file: embeddings/runtime_index.csv  # Index file for runtime em
 recognition_threshold: 0.45  # Cosine similarity threshold (-1 to 1)
 recognition_topk: 5
 
-# Crowd monitoring
+#Crowd monitoring
 crowd_enabled: true
 crowd_model_path: src/crowd/task_two_model_best.pth.tar
 crowd_threshold: 1000.0
@@ -41,6 +41,12 @@ annotated_frames_dir: results
 # Detector settings
 detector_model_path: yolov8n-face.pt
 detector_conf_thresh: 0.5
+detector_imgsz: 384
+detector_half: true
+
+# Capture settings
+video_width: 640
+video_height: 480
 
 # Tracker settings
 tracker_max_age: 100
@@ -62,4 +68,3 @@ batch_recognition_results_dir: results/batch_recognition  # Folder to save resul
 batch_recognition_scan_interval: 2.0  # Seconds between folder scans
 batch_recognition_search_runtime: true  # Search in runtime embeddings
 batch_recognition_search_precomputed: true  # Search in precomputed embeddings
-

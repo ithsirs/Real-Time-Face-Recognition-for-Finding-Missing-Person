@@ -19,7 +19,7 @@ def setup_logger():
     log_dir = os.path.join("runs", "test_logs")
     os.makedirs(log_dir, exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file = os.path.join(log_dir, f"test_{timestamp}.log")
+    log_file = os.path.join(log_dir, f"test_detection.log")
     file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(logging.DEBUG)
 
