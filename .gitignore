@@ -174,3 +174,8 @@ DeepFace/
 aligned_faces/
 
 # ====================================
+# Model weights
+*.pth
+*.pth.tar
+*.pt
+*.ckpt
