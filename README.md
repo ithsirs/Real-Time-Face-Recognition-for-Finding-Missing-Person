@@ -1,6 +1,22 @@
 # Real-Time-Face-Recognition-for-Finding-Missing-Person
 
-Set-up guidance for finding missing person in real time using face recognition. This version adds periodic database updates, per-frame batching, temporary crop/embedding storage, alerting, and optional crowd-density monitoring.
+## Project Overview
+
+This project presents a real-time, multi-stage surveillance system designed to identify missing persons from live video streams under real-world constraints. Rather than focusing solely on face recognition accuracy, the system emphasizes system-level design, performance analysis, and reliability, making it suitable for deployment-oriented research and experimentation.
+
+The system integrates face detection, multi-object tracking, embedding-based identity recognition, crowd density estimation, and event-driven alerting within an asynchronous pipeline architecture. Multiple execution configurations (GPU-accelerated and CPU-only) are evaluated to study accuracy–latency–throughput trade-offs in heterogeneous computational environments.
+
+## Key Objectives
+
+- Enable simultaneous identification of multiple individuals in real time
+- Maintain persistent identity tracking across frames
+- Integrate crowd-aware context to enhance public safety intelligence
+- Analyze latency bottlenecks, throughput, and system robustness
+- Support scalable and fault-tolerant pipeline execution
+
+## System Workflow
+
+The system is structured into two logically decoupled but cooperative processing pipelines, enabling modular analysis and scalability.
 
 ## Overview
 - Detects faces with YOLOv8-Face
